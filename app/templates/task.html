@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Page Title</title>
+    <script>
+      var upgradeTime = 1;
+      var seconds = upgradeTime;
+      var flag = 0;
+      var date = new Date().toLocaleTimeString("en-US", { hour12: false });
+      console.log(date);
+      function timer() {
+        var days = Math.floor(seconds / 24 / 60 / 60);
+        var hoursLeft = Math.floor(seconds - days * 86400);
+        var hours = Math.floor(hoursLeft / 3600);
+        var minutesLeft = Math.floor(hoursLeft - hours * 3600);
+        var minutes = Math.floor(minutesLeft / 60);
+        var remainingSeconds = seconds % 60;
+        function pad(n) {
+          return n < 10 ? "0" + n : n;
+        }
+        console.log(
+          pad(hours) + ":" + pad(minutes) + ":" + pad(remainingSeconds)
+        );
+        document.getElementById("countdown").value =
+          pad(hours) + ":" + pad(minutes) + ":" + pad(remainingSeconds);
+
+        document.getElementById("time1").value = String(date);
+        if (seconds == 0) {
+          clearInterval(countdownTimer);
+          document.getElementById("countdown").innerHTML = "Completed";
+        } else {
+          if (flag == 1) {
+            seconds++;
+          }
+        }
+      }
+
+      function stop() {
+        flag = 0;
+      }
+
+      function start() {
+        flag = 1;
+        console.log(flag);
+      }
+
+      var countdown = setInterval("timer()", 1000);
+    </script>
+  </head>
+  <body>
+    <h2>Add Task</h2>
+    <form method="POST" class="post-form" autocomplete="off">
+      {% csrf_token %} {{ form.as_p }}
+      <!--render form as paragrah. Will wrap the form in <p> tags-->
+
+      <button type="submit">Submit</button>
+      {{ form.errors }}
+    </form>
+    <br /><br />
+    <button class="start" onclick="start()">Start</button>
+    <button class="stop" onclick="stop()">Stop</button>
+    <br /><br />
+    <button><a href="{% url 'SignOutView' %}">Logout</a></button>
+    <br /><br />
+    <button><a href="{% url 'getTaskView' %}">See Tasks</a></button>
+
+    {{ form.errors }} {% for msg in messages %}
+    <p style="color: red">{{msg}}</p>
+    {% endfor %}
+    <!-- <span id="countdown" class="timer"></span> -->
+  </body>
+</html>

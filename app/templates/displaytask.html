@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Display Task</title>
+  </head>
+  <table>
+    <tr>
+      <th>Project</th>
+      <th>Task Name</th>
+      <th>Start Time</th>
+      <th>Time Taken</th>
+      <th>End Time</th>
+    </tr>
+    {% for row in tasks %}
+    <tr>
+      <td>{{ row.projectNo}}</td>
+      <td>{{ row.taskName }}</td>
+      <td>{{ row.startTime }}</td>
+      <td>{{ row.timeTaken }}</td>
+      <td>{{ row.endTime }}</td>
+      {%endfor%}
+    </tr>
+  </table>
+</br>
+  <button><a href="{% url 'SignOutView' %}">Logout</a></button>
+</html>
