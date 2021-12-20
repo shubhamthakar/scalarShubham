@@ -1,0 +1,36 @@
+<style>
+  td,
+  th {
+    border: 1px solid #dddddd;
+    text-align: left;
+    padding: 8px;
+  }
+</style>
+{% if data %}
+<table>
+  <tr>
+    <th>Name</th>
+    <th>Start Time</th>
+    <th>End Time</th>
+    <th>Participants</th>
+    <th>edit</th>
+  </tr>
+  {% for ele in data %}
+  <tr>
+    <td>{{ ele.title}}</td>
+    <td>{{ ele.startTime }}</td>
+    <td>{{ ele.endTime }}</td>
+    <td>{% for i in ele.participants %} {{i }} {% endfor %}</td>
+    <td>
+      <a href="{% url 'EditInterviews' pk=ele.id%}"
+        ><button type="button">edit</button></a
+      >
+    </td>
+  </tr>
+
+  {% endfor %}
+</table>
+{% else %}
+<h3>No interviews scheduled</h3>
+{% endif %}
+<br />

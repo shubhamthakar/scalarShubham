@@ -32,8 +32,8 @@ class CreateInterviewForm(forms.Form):
         choices.append(ele)
 
     title = forms.CharField()
-    startTime = forms.DateTimeField(widget=forms.SelectDateWidget())
-    endTime = forms.DateTimeField(widget=forms.SelectDateWidget())
+    startTime = forms.TimeField(widget=forms.TimeInput(attrs={'type': 'time'}))
+    endTime = forms.TimeField(widget=forms.TimeInput(attrs={'type': 'time'}))
     participants = forms.MultipleChoiceField(
         required=True,
         widget=forms.CheckboxSelectMultiple,

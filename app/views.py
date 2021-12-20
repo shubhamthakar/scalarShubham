@@ -10,26 +10,95 @@ import time
 import datetime
 from django.utils.decorators import method_decorator
 from django.contrib.auth.decorators import login_required
+from datetime import datetime
 
 
 
-@method_decorator(login_required, name='dispatch')
 class CreateInterview(View):
     def get(self, request):
-        pass
+        form = CreateInterviewForm()
+        context = {"form":form}
+        return render(request, 'create.html', context)
     def post(self, request):
-        pass
+        form = CreateInterviewForm(request.POST)
+        if form.is_valid():
+            participants = form.cleaned_data.get("participants")
+            title = form.cleaned_data.get('title')
+            startTime = request.POST.get('startTime')
+            endTime = request.POST.get('endTime')
+            if len(participants) < 2:
+                messages.info(request, 'Add atleast 2 members')
+                return redirect('CreateInterview')
+            now = datetime.now()
+            currentTime = now.strftime("%H:%M")
+            print("Current Time =", currentTime)
+            print("StartTIme",startTime)
+            print("StartTIme",endTime)
+            if endTime < currentTime or startTime < currentTime:
+                messages.info(request, 'Input correct start and end time')
+                return redirect('CreateInterview')
+            if endTime < startTime:
+                messages.info(request, 'Input correct end time')
+                return redirect('CreateInterview')
+            
+            for name in participants:
+                user = User.objects.get(username=name)
+                participantObjArr = Participant.objects.filter(user=user)
+                for ele in participantObjArr:
+                    start = ele.interview.startTime
+                    end = ele.interview.endTime
+                    if startTime > str(start) and startTime < str(end):
+                        messages.info(request, 'Timings clashing')
+                        return redirect('CreateInterview')
+                    if endTime > str(start) and endTime < str(end):
+                        messages.info(request, 'Timings clashing')
+                        return redirect('CreateInterview')
+            interview = Interview.objects.create(title=title, startTime=startTime, endTime=endTime)
+            for name in participants:
+                user = User.objects.get(username = name)
+                Participant.objects.create(interview=interview, user=user)
+
+            return redirect('DisplayInterviews')
+                    
+
+
+        
+        
+        
 
 
 
-@method_decorator(login_required, name='dispatch')
+        # print(startTime[0:7])
+        # startTime = datetime.datetime.strptime(startTime[0:7],"%H:%M:%S")
+        # user = request.user
+        # print(user)
+        # task = Task.objects.create(user=user,projectNo=projectNo,taskName= taskName,startTime=startTime,timeTaken=timeTaken)
+        # task.save()
+        # messages.success(request, 'Task ' + taskName + 'was added')
+        # return redirect('TaskManagerView')
+        
+
+
 class DisplayInterviews(View):
     def get(self, request):
         interviews = Interview.objects.all()
-        return render(request, 'display.html', {"interviews":interviews})
+        arr = []
+        for i in interviews:
+            data = {}
+            data['id'] = i.id
+            data['title'] = i.title
+            data['startTime'] = i.startTime
+            data['endTime'] = i.endTime
+            data['participants'] = []
+            participants = Participant.objects.filter(interview=i)
+            for j in participants:
+                data['participants'].append(j.user.username)
+            arr.append(data)
+        print(arr)
+        return render(request, 'display.html', {"data":arr})
 
 
-@method_decorator(login_required, name='dispatch')
+
 class EditInterviews(View):
     def get(self, request, pk):
         interview = Interview.objects.get(id=pk)
@@ -37,6 +106,58 @@ class EditInterviews(View):
         form = CreateInterviewForm()
         context = {"interview":interview, "participants":participants, "form":form}
         return render(request, 'edit.html', context)
+    def post(self, request, pk):
+        form = CreateInterviewForm(request.POST)
+        if form.is_valid():
+            participants = form.cleaned_data.get("participants")
+            title = form.cleaned_data.get('title')
+            startTime = request.POST.get('startTime')
+            endTime = request.POST.get('endTime')
+            if len(participants) < 2:
+                messages.info(request, 'Add atleast 2 members')
+                return redirect('EditInterviews', pk=pk)
+            now = datetime.now()
+            currentTime = now.strftime("%H:%M")
+            print("Current Time =", currentTime)
+            print("StartTIme",startTime)
+            print("StartTIme",endTime)
+            if endTime < currentTime or startTime < currentTime:
+                messages.info(request, 'Input correct start and end time')
+                return redirect('EditInterviews', pk=pk)
+            if endTime < startTime:
+                messages.info(request, 'Input correct end time')
+                return redirect('EditInterviews', pk=pk)
+            interview = Interview.objects.get(id=pk)
+            for name in participants:
+                user = User.objects.get(username=name)
+                participantObjArr = Participant.objects.filter(user=user)
+                for ele in participantObjArr:
+                    if ele.interview == interview:
+                        continue
+                    else:
+                        print(ele.interview)
+                        print(interview)
+                        start = ele.interview.startTime
+                        end = ele.interview.endTime
+                        if startTime > str(start) and startTime < str(end):
+                            messages.info(request, 'Timings clashing')
+                            return redirect('EditInterviews', pk=pk)
+                        if endTime > str(start) and endTime < str(end):
+                            messages.info(request, 'Timings clashing')
+                            return redirect('EditInterviews', pk=pk)
+            interview = Interview.objects.get(id=pk)
+            interview.title = title
+            interview.startTime = startTime
+            interview.endTime = endTime
+            interview.save()
+            partObjArr = Participant.objects.filter(interview=interview)
+            for ele in partObjArr:
+                ele.delete()
+            for name in participants:
+                user = User.objects.get(username = name)
+                Participant.objects.create(interview=interview, user=user)
+
+            return redirect('DisplayInterviews')
 
 
 
