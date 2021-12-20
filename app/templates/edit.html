@@ -3,14 +3,46 @@
   <head>
     <title>Edit</title>
   </head>
+  <body>
+    <h2>Edit</h2>
+    <form method="POST">
+      {% csrf_token %} {{ form.as_p }}
+      <!--render form as paragrah. Will wrap the form in <p> tags-->
+      <button type="submit" class="btn btn-primary">Edit</button>
+    </form>
+    {% for msg in messages %}
+    <p style="color: red">{{msg}}</p>
+    {% endfor %}
+    <script>
+      document.getElementById("title").value = "{{interview.title}}";
+      var startTime = "{{interview.startTime}}";
+      startTime = startTime.substr(0,startTime.indexOf(' '));
+      if (startTime.length<5){
 
-  <h2>Edit</h2>
-  <form method="POST">
-    {% csrf_token %} {{ form.as_p }}
-    <!--render form as paragrah. Will wrap the form in <p> tags-->
-    <button type="submit" class="btn btn-primary">Edit</button>
-  </form>
-  {% for msg in messages %}
-  <p style="color: red">{{msg}}</p>
-  {% endfor %}
+        startTime = "0"+startTime;
+      }
+      document.getElementById("startTime").value = startTime;
+      var endTime = "{{interview.endTime}}";
+      endTime = endTime.substr(0,endTime.indexOf(' '));
+      if (endTime.length<5){
+
+        endTime = "0"+endTime;
+      }
+      document.getElementById("endTime").value = endTime;
+      parent = document.getElementById("participants");
+      descendents = parent.getElementsByTagName('input');
+      var arr = {{users | safe}};
+      for(i=0; i<descendents.length; i++){
+
+        for(j=0; j<arr.length; j++){
+
+          if (descendents[i].value == arr[j]){
+
+            descendents[i].checked = "True";
+          }
+        }
+
+      }
+    </script>
+  </body>
 </html>

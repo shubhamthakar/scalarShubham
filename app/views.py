@@ -62,26 +62,13 @@ class CreateInterview(View):
                     
 
 
-        
-        
-        
 
-
-
-        # print(startTime[0:7])
-        # startTime = datetime.datetime.strptime(startTime[0:7],"%H:%M:%S")
-        # user = request.user
-        # print(user)
-        # task = Task.objects.create(user=user,projectNo=projectNo,taskName= taskName,startTime=startTime,timeTaken=timeTaken)
-        # task.save()
-        # messages.success(request, 'Task ' + taskName + 'was added')
-        # return redirect('TaskManagerView')
         
 
 
 class DisplayInterviews(View):
     def get(self, request):
-        interviews = Interview.objects.all()
+        interviews = Interview.objects.all().order_by("startTime")
         arr = []
         for i in interviews:
             data = {}
@@ -103,8 +90,11 @@ class EditInterviews(View):
     def get(self, request, pk):
         interview = Interview.objects.get(id=pk)
         participants = Participant.objects.filter(interview=interview)
+        users = []
+        for ele in participants:
+            users.append(ele.user.username)
         form = CreateInterviewForm()
-        context = {"interview":interview, "participants":participants, "form":form}
+        context = {"interview":interview, "users":users, "form":form}
         return render(request, 'edit.html', context)
     def post(self, request, pk):
         form = CreateInterviewForm(request.POST)

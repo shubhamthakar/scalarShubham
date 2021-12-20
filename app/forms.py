@@ -6,23 +6,7 @@ from django.forms import ModelForm, TextInput
 from django.contrib.admin.widgets import AdminDateWidget
 from django.forms.fields import DateField
 
-# class CreateInterviewForm(forms.ModelForm):
 
-#     choices = []
-#     users = User.objects.all()
-#     for user in users:
-#         ele = (user.username, user.username)
-#         choices.append(ele)
-
-#     participants = forms.MultipleChoiceField(choices = choices)
-#     class Meta:
-#         model = Interview
-#         fields = ["title", "startTime", "endTime"]
-#         widgets = {
-#             'endTime': forms.DateInput(format="%d/%m/%Y"),
-#             'startTime':  forms.DateInput(format="%d/%m/%Y"),
-#             'title': forms.TextInput(attrs={'value':1}),
-#             }
 class CreateInterviewForm(forms.Form):
 
     choices = []
@@ -31,13 +15,14 @@ class CreateInterviewForm(forms.Form):
         ele = (user.username, user.username)
         choices.append(ele)
 
-    title = forms.CharField()
-    startTime = forms.TimeField(widget=forms.TimeInput(attrs={'type': 'time'}))
-    endTime = forms.TimeField(widget=forms.TimeInput(attrs={'type': 'time'}))
+    title = forms.CharField(widget=forms.TextInput(attrs={'id':'title'}))
+    startTime = forms.TimeField(widget=forms.TimeInput(attrs={'type': 'time', 'id':'startTime'}))
+    endTime = forms.TimeField(widget=forms.TimeInput(attrs={'type': 'time', 'id':'endTime'}))
     participants = forms.MultipleChoiceField(
         required=True,
-        widget=forms.CheckboxSelectMultiple,
+        widget=forms.CheckboxSelectMultiple(attrs={'id':'participants'}),
         choices=choices,
+        
     )
 
 
@@ -74,3 +59,21 @@ class CreateInterviewForm(forms.Form):
     # username = forms.CharField(label = 'Username', max_length = 12)
     # password = forms.CharField(label = 'Password',min_length = 6, widget = forms.PasswordInput(attrs={'class': 'form-control', 'style': 'width: 75%;'}))
     # email = forms.CharField(label = 'email', max_length = 20)
+
+    # class CreateInterviewForm(forms.ModelForm):
+
+#     choices = []
+#     users = User.objects.all()
+#     for user in users:
+#         ele = (user.username, user.username)
+#         choices.append(ele)
+
+#     participants = forms.MultipleChoiceField(choices = choices)
+#     class Meta:
+#         model = Interview
+#         fields = ["title", "startTime", "endTime"]
+#         widgets = {
+#             'endTime': forms.DateInput(format="%d/%m/%Y"),
+#             'startTime':  forms.DateInput(format="%d/%m/%Y"),
+#             'title': forms.TextInput(attrs={'value':1}),
+#             }

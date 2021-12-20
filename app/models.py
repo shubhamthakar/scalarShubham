@@ -3,6 +3,35 @@ from django.db.models.fields.related import ForeignKey
 from django.utils import timezone
 from django.contrib.auth.models import User
 import datetime
+
+
+class Interview(models.Model):
+    id = models.AutoField(primary_key=True)
+    title = models.CharField(max_length = 30)
+    startTime = models.TimeField(auto_now=False)
+    endTime = models.TimeField(auto_now=False)
+
+class Participant(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    interview = models.ForeignKey(Interview, on_delete=models.CASCADE)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 # Create your models here.
 # class Task(models.Model):
 #     PROJECT1 = 'PJ1'
@@ -27,13 +56,3 @@ import datetime
 
 #     def __str__(self):
 #         return self.taskName
-
-class Interview(models.Model):
-    id = models.AutoField(primary_key=True)
-    title = models.CharField(unique=True, max_length = 30)
-    startTime = models.TimeField(auto_now=False)
-    endTime = models.TimeField(auto_now=False)
-
-class Participant(models.Model):
-    user = models.ForeignKey(User, on_delete=models.CASCADE)
-    interview = models.ForeignKey(Interview, on_delete=models.CASCADE)
